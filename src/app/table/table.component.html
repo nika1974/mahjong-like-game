@@ -1,0 +1,12 @@
+<div class="table-grid">
+        <!-- *ngIf="cards$ | async as cards" -->
+    <div [ngClass]="{'disableClick': clicksNotAvailable, 'paired': card.paired}" 
+        class="card"
+        *ngFor="let card of cards"
+        (click)="handleCardClick(card)"
+        [@cardAnimation]="cards">
+        <div *ngIf="showCardsToObserve || card.paired" [@cardAnimation]="card">
+            <app-card [card]="card"></app-card>
+        </div>
+    </div>
+</div>
