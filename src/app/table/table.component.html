@@ -1,6 +1,6 @@
 <div class="table-grid">
         <!-- *ngIf="cards$ | async as cards" -->
-    <div [ngClass]="{'disableClick': clicksNotAvailable, 'paired': card.paired}" 
+    <div [ngClass]="{'disableClick': clicksNotAvailable, 'paired': card.paired}"
         class="card"
         *ngFor="let card of cards"
         (click)="handleCardClick(card)"
@@ -9,4 +9,14 @@
             <app-card [card]="card"></app-card>
         </div>
     </div>
+</div>
+
+
+<div class="game-progress">
+  <h3>{{progressValueInNumbers}}/15</h3>
+  <app-progress-bar color="accent" mode="determinate" [value]="progressValue"></app-progress-bar>
+</div>
+
+<div class="table-action-buttons">
+  <button mat-raised-button color="primary" (click)="restartGame()">Restart</button>
 </div>

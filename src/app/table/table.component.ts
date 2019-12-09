@@ -23,33 +23,36 @@ import { trigger, transition, query, style, stagger, animate } from '@angular/an
         ], { optional: true }),
         query(':leave',
           [animate('300ms',
-            style({ opacity:0, transform: 'rotate(90deg)'}))],
-              { optional: true }
+            style({ opacity: 0, transform: 'rotate(90deg)' }))],
+          { optional: true }
         )
       ])
     ])
   ]
 })
+
 export class TableComponent implements OnInit, OnDestroy {
 
   cards$: Subscription;
   cards: Card[];
   selectedCard: Card;
-  clicksNotAvailable: Boolean;
-  showCardsToObserve: Boolean = true;
-  
+  clicksNotAvailable: boolean;
+  showCardsToObserve: boolean = true;
+  progressValue = 0;
+  progressValueInNumbers = 0;
+
   constructor(
     private cardService: CardService
   ) { }
 
   ngOnInit() {
-    this.cards$ = this.cardService.matrixCards().pipe(map(result => {
+    this.cardService.matrixCards(50).pipe(map(result => {
       return result.map((item, index) => {
         return {
-          index: index,
+          index,
           value: item.value,
           paired: item.paired
-        }
+        };
       });
     })).subscribe(result => {
       this.cards = result;
@@ -65,34 +68,43 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   handleCardClick(card: Card) {
-    if (this.showCardsToObserve || this.clicksNotAvailable || 
-      (this.selectedCard && this.selectedCard.index === card.index) || card.paired) {
+    // ignore click if 1.observation phase or 2.phase after swong card pair or
+    // 3.clicks on the flipped card 4.card is paired
+    if (this.showCardsToObserve || this.clicksNotAvailable || card.paired) {
       return;
     }
-
+    debugger;
+    // card becomes paired even for some time
     card.paired = true;
-    
+
     if (this.selectedCard) {
       if (card.value !== this.selectedCard.value) {
         this.clicksNotAvailable = true;
         setTimeout(() => {
           this.cards.some(item => {
+            // check if there is a way doing it w/o index
             if (item.index === this.selectedCard.index) {
               item.paired = false;
-              return;
+              return false;
             }
           });
-          
+
           this.selectedCard = null;
           card.paired = false;
           this.clicksNotAvailable = false;
-        }, 1500);
+        }, 1000);
       } else {
+        this.progressValue += 100 / (this.cards.length / 2);
+        this.progressValueInNumbers++;
         this.selectedCard = null;
       }
     } else {
       this.selectedCard = card;
     }
+  }
+
+  restartGame() {
+    // this.cards$.next();
   }
 
 }

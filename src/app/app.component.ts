@@ -7,5 +7,5 @@ import { Observable, of } from 'rxjs';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'Mahjong-like game'
+  title = 'Mahjong-like game';
 }
